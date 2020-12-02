@@ -9,7 +9,7 @@ namespace AdventOfCode
         public static async Task Problem1()
         {
             HashSet<int> value = new HashSet<int>();
-            foreach (string line in await Data.GetDataLines(1,1))
+            foreach (string line in await Data.GetDataLines(1, 1))
             {
                 var number = int.Parse(line);
                 int needed = 2020 - number;
@@ -30,14 +30,16 @@ namespace AdventOfCode
         public static async Task Problem2()
         {
             HashSet<int> seen = new HashSet<int>();
-            Dictionary<int, (int,int)> pairs = new Dictionary<int, (int, int)>();
-            foreach (string line in await Data.GetDataLines(1,1))
+            Dictionary<int, (int, int)> pairs = new Dictionary<int, (int, int)>();
+            foreach (string line in await Data.GetDataLines(1, 1))
             {
                 var number = int.Parse(line);
                 int needed = 2020 - number;
                 if (pairs.TryGetValue(needed, out var pair))
                 {
-                    Console.WriteLine($"Found: {pair.Item1} * {pair.Item2} * {number} = {number * pair.Item1 * pair.Item2}");
+                    Console.WriteLine(
+                        $"Found: {pair.Item1} * {pair.Item2} * {number} = {number * pair.Item1 * pair.Item2}"
+                    );
                     return;
                 }
 
