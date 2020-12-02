@@ -13,11 +13,8 @@ namespace AdventOfCode
             int valid = 0;
             foreach (string line in data)
             {
-                (string minString, string maxString, string letterString, string password) =
-                    Regex.Match(line, @"^(\d+)-(\d+) (.): (.*)$");
-                int min = int.Parse(minString);
-                int max = int.Parse(maxString);
-                char letter = letterString[0];
+                Rx.M(line, @"^(\d+)-(\d+) (.): (.*)$", out int min, out int max, out char letter, out string password);
+
                 int letterCount = password.Count(c => c == letter);
                 if (letterCount >= min && letterCount <= max)
                 {
@@ -34,11 +31,8 @@ namespace AdventOfCode
             int valid = 0;
             foreach (string line in data)
             {
-                (string aString, string bString, string letterString, string password) =
-                    Regex.Match(line, @"^(\d+)-(\d+) (.): (.*)$");
-                int a = int.Parse(aString);
-                int b = int.Parse(bString);
-                char letter = letterString[0];
+                Rx.M(line, @"^(\d+)-(\d+) (.): (.*)$", out int a, out int b, out char letter, out string password);
+
                 if ((password[a - 1] == letter) ^ (password[b - 1] == letter))
                 {
                     valid++;
