@@ -25,7 +25,6 @@ namespace AdventOfCode
         public static async Task Problem2()
         {
             var lines = await Data.GetDataLines(3, 1);
-            int count = 0;
             var slopes = new[] {(1, 1), (1, 3), (1, 5), (1, 7), (2, 1)};
             var hits = new int[slopes.Length];
             for (int iLine = 0; iLine < lines.Length; iLine++)

@@ -8,17 +8,34 @@ namespace AdventOfCode
     {
         public static void M<T1>(
             string input,
-            [RegexPatternAttribute] string pattern,
+            [RegexPattern] string pattern,
             out T1 v1
         )
         {
             Match m = Validate<T1>(input, pattern, 1);
             v1 = (T1) Convert.ChangeType(m.Groups[1].Value, typeof(T1));
         }
+        
+        public static bool IsM<T1>(
+            string input,
+            [RegexPattern] string pattern,
+            out T1 v1
+        )
+        {
+            Match m = ValidateIs<T1>(input, pattern, 1);
+            if (m.Success)
+            {
+                v1 = (T1) Convert.ChangeType(m.Groups[1].Value, typeof(T1));
+                return true;
+            }
+
+            v1 = default;
+            return false;
+        }
 
         public static void M<T1, T2>(
             string input,
-            [RegexPatternAttribute] string pattern,
+            [RegexPattern] string pattern,
             out T1 v1,
             out T2 v2
         )
@@ -28,9 +45,29 @@ namespace AdventOfCode
             v2 = (T2) Convert.ChangeType(m.Groups[2].Value, typeof(T2));
         }
 
+        public static bool IsM<T1, T2>(
+            string input,
+            [RegexPattern] string pattern,
+            out T1 v1,
+            out T2 v2
+        )
+        {
+            Match m = ValidateIs<T1>(input, pattern, 2);
+            if (m.Success)
+            {
+                v1 = (T1) Convert.ChangeType(m.Groups[1].Value, typeof(T1));
+                v2 = (T2) Convert.ChangeType(m.Groups[2].Value, typeof(T2));
+                return true;
+            }
+
+            v1 = default;
+            v2 = default;
+            return false;
+        }
+
         public static void M<T1, T2, T3>(
             string input,
-            [RegexPatternAttribute] string pattern,
+            [RegexPattern] string pattern,
             out T1 v1,
             out T2 v2,
             out T3 v3
@@ -44,7 +81,7 @@ namespace AdventOfCode
 
         public static void M<T1, T2, T3, T4>(
             string input,
-            [RegexPatternAttribute] string pattern,
+            [RegexPattern] string pattern,
             out T1 v1,
             out T2 v2,
             out T3 v3,
@@ -60,7 +97,7 @@ namespace AdventOfCode
 
         public static void M<T1, T2, T3, T4, T5>(
             string input,
-            [RegexPatternAttribute] string pattern,
+            [RegexPattern] string pattern,
             out T1 v1,
             out T2 v2,
             out T3 v3,
@@ -82,6 +119,22 @@ namespace AdventOfCode
             if (!m.Success)
             {
                 throw new ArgumentException("Regex is not matched");
+            }
+
+            if (m.Groups.Count != count + 1)
+            {
+                throw new ArgumentException($"Regex requires {count} match group");
+            }
+
+            return m;
+        }
+
+        private static Match ValidateIs<T1>(string input, string pattern, int count)
+        {
+            Match m = Regex.Match(input, pattern);
+            if (!m.Success)
+            {
+                return m;
             }
 
             if (m.Groups.Count != count + 1)
