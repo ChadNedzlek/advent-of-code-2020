@@ -11,7 +11,7 @@ namespace AdventOfCode
 
         public static async Task Problem1()
         {
-            var data = await Data.GetDataLines(5, 1);
+            var data = await Data.GetDataLines();
             int seatId = 0;
             foreach (var line in data)
             {
@@ -26,7 +26,7 @@ namespace AdventOfCode
 
         public static async Task Problem2()
         {
-            var data = await Data.GetDataLines(5, 1);
+            var data = await Data.GetDataLines();
             var set = new HashSet<int>(Enumerable.Range(0, 128*8));
             foreach (var line in data)
             {

@@ -9,7 +9,7 @@ namespace AdventOfCode
     {
         public static async Task Problem1()
         {
-            string[] data = await Data.GetDataLines(2, 1);
+            string[] data = await Data.GetDataLines();
             int valid = 0;
             foreach (string line in data)
             {
@@ -27,7 +27,7 @@ namespace AdventOfCode
 
         public static async Task Problem2()
         {
-            string[] data = await Data.GetDataLines(2, 1);
+            string[] data = await Data.GetDataLines();
             int valid = 0;
             foreach (string line in data)
             {

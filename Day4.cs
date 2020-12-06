@@ -11,7 +11,7 @@ namespace AdventOfCode
         {
             HashSet<string> required = new HashSet<string> {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"};
             HashSet<string> optional = new HashSet<string>{"cid"};
-            var data = await Data.GetDataLines(4, 1);
+            var data = await Data.GetDataLines();
 
             Dictionary<string, string> currentDataSet = new Dictionary<string, string>();
 
@@ -87,7 +87,7 @@ namespace AdventOfCode
             };
 
             HashSet<string> optional = new HashSet<string>{"cid"};
-            var data = await Data.GetDataLines(4, 1);
+            var data = await Data.GetDataLines();
 
             Dictionary<string, string> currentDataSet = new Dictionary<string, string>();
 

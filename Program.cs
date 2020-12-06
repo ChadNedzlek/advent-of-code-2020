@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -39,20 +38,6 @@ namespace AdventOfCode
                 MethodInfo method = methods.OrderBy(m => m.Name).Last();
                 await (Task) method.Invoke(null, null);
             }
-        }
-    }
-
-    public class Data
-    {
-        public static Task<string[]> GetDataLines(int day, int problem)
-        {
-            return File.ReadAllLinesAsync(
-                Path.Combine(
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                    "data",
-                    $"day{day}_problem{problem}.txt"
-                )
-            );
         }
     }
 }
