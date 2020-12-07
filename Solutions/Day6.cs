@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AdventOfCode
+namespace AdventOfCode.Solutions
 {
     public class Day6
     {
