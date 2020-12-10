@@ -21,7 +21,7 @@ namespace AdventOfCode.Solutions
             Console.WriteLine($"Diffs {string.Join(",", diffs)} : {diffs[1]} * {diffs[3]} = {diffs[1] * diffs[3]}");
         }
         
-        public static async Task Problem2Recursive()
+        public static async Task Problem2()
         {
             var data = (await Data.GetDataLines()).Select(int.Parse).ToHashSet();
             int magic = data.Max() + 3;
@@ -49,18 +49,22 @@ namespace AdventOfCode.Solutions
             Console.WriteLine($"Valid arrangements: {WaysTo(magic)}");
         }
 
-        public static async Task Problem2()
+        // Problem 2, no recursion
+        public static async Task Problem3()
         {
             var data = (await Data.GetDataLines()).Select(int.Parse).ToHashSet();
             int magic = data.Max() + 3;
-            long[] paths = new long[magic+1];
+            long[] paths = new long[magic+4];
             paths[0] = 1;
 
             for (int i = 0; i <= magic; i++)
             {
-                for (int j = i + 3; j > i && j > 0; j++)
+                for (int j = i + 1; j <= i + 3; j++)
                 {
-                    paths[j] += paths[j];
+                    if (data.Contains(j) || j == magic)
+                    {
+                        paths[j] += paths[i];
+                    }
                 }
             }
 
