@@ -20,8 +20,8 @@ namespace AdventOfCode.Solutions
 
             Console.WriteLine($"Diffs {string.Join(",", diffs)} : {diffs[1]} * {diffs[3]} = {diffs[1] * diffs[3]}");
         }
-
-        public static async Task Problem2()
+        
+        public static async Task Problem2Recursive()
         {
             var data = (await Data.GetDataLines()).Select(int.Parse).ToHashSet();
             int magic = data.Max() + 3;
@@ -47,6 +47,24 @@ namespace AdventOfCode.Solutions
                 return valid;
             }
             Console.WriteLine($"Valid arrangements: {WaysTo(magic)}");
+        }
+
+        public static async Task Problem2()
+        {
+            var data = (await Data.GetDataLines()).Select(int.Parse).ToHashSet();
+            int magic = data.Max() + 3;
+            long[] paths = new long[magic+1];
+            paths[0] = 1;
+
+            for (int i = 0; i <= magic; i++)
+            {
+                for (int j = i + 3; j > i && j > 0; j++)
+                {
+                    paths[j] += paths[j];
+                }
+            }
+
+            Console.WriteLine($"Valid arrangements: {paths[magic]}");
         }
     }
 }
