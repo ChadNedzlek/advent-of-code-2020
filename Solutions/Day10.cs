@@ -67,8 +67,8 @@ namespace AdventOfCode.Solutions
                     }
                 }
             }
-
-            Console.WriteLine($"Valid arrangements: {paths[magic]}");
+            
+            Console.WriteLine($"Valid arrangements: {paths[magic]:X}");
         }
     }
 }
