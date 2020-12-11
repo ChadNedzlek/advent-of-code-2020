@@ -74,26 +74,28 @@ namespace AdventOfCode.Solutions
 
             int CheckSeat(int oRow, int oCol, int dRow, int dCol)
             {
-                int row = oRow + dRow;
-                int col = oCol + dCol;
-
-                if (row < 0 || row >= data.Length)
-                    return 0;
-
-                if (col < 0 || col >= data[row].Length)
-                    return 0;
-
-                if (data[row][col] == '#')
+                while (true)
                 {
-                    return 1;
-                }
+                    int row = oRow + dRow;
+                    int col = oCol + dCol;
 
-                if (data[row][col] == 'L')
-                {
-                    return 0;
-                }
+                    if (row < 0 || row >= data.Length) return 0;
 
-                return CheckSeat(row, col, dRow, dCol);
+                    if (col < 0 || col >= data[row].Length) return 0;
+
+                    if (data[row][col] == '#')
+                    {
+                        return 1;
+                    }
+
+                    if (data[row][col] == 'L')
+                    {
+                        return 0;
+                    }
+
+                    oRow = row;
+                    oCol = col;
+                }
             }
 
             bool changed;
