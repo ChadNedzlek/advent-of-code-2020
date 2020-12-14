@@ -59,8 +59,11 @@ namespace AdventOfCode.Solutions
                             var c = partialMask[index];
                             if (c == 'X')
                             {
-                                var m = 1 << (mask.Length - index - 1);
+                                // Math out the correct bit
+                                long m = 1L << (mask.Length - index - 1);
+                                // Stop changing this bit
                                 StringBuilder b = new StringBuilder(partialMask) {[index] = '0'};
+                                // And try this bit with both 0 and 1
                                 WriteAll(a | m, b.ToString());
                                 WriteAll(a & ~m, b.ToString());
                                 return;
