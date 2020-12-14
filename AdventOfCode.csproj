@@ -3,6 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;Sample</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Sample|AnyCPU'">
+    <DefineConstants>TRACE;SAMPLE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

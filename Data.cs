@@ -12,9 +12,39 @@ namespace AdventOfCode
             [CallerFilePath] string file = null,
             [CallerMemberName] string problem = null)
         {
+            #if SAMPLE
+            string suffix = "_sample";
+            #else
+            string suffix = "";
+            #endif
             var dayPart = Path.GetFileNameWithoutExtension(file);
             var problemPart = problem;
             var path =
+                Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "data",
+                    $"{dayPart}_{problemPart}{suffix}.txt"
+                );
+
+            if (File.Exists(path)) return File.ReadAllLinesAsync(path);
+
+            path =
+                Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "data",
+                    $"{dayPart}_problem1{suffix}.txt"
+                );
+
+            if (File.Exists(path)) return File.ReadAllLinesAsync(path);
+
+            path =
+                Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "data",
+                    $"{dayPart}{suffix}.txt"
+                );
+
+            path =
                 Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                     "data",
@@ -28,6 +58,15 @@ namespace AdventOfCode
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                     "data",
                     $"{dayPart}_problem1.txt"
+                );
+
+            if (File.Exists(path)) return File.ReadAllLinesAsync(path);
+
+            path =
+                Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "data",
+                    $"{dayPart}.txt"
                 );
 
             return File.ReadAllLinesAsync(path);
