@@ -44,6 +44,8 @@ namespace AdventOfCode
                     $"{dayPart}{suffix}.txt"
                 );
 
+            if (File.Exists(path)) return File.ReadAllLinesAsync(path);
+
             path =
                 Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
