@@ -40,11 +40,13 @@ namespace AdventOfCode.Solutions
             var data = await Data.GetDataLines();
             Dictionary<long, long> values = new Dictionary<long, long>();
             string mask = "";
+            long addMask = 0;
             foreach (var line in data)
             {
                 if (Rx.IsM(line, @"^mask = ([01X]+)$", out string value))
                 {
                     mask = value;
+                    addMask = Convert.ToInt64(mask.Replace('X', '0'), 2);
                 }
                 else
                 {
@@ -55,32 +57,19 @@ namespace AdventOfCode.Solutions
                         for (int index = 0; index < mask.Length; index++)
                         {
                             var c = partialMask[index];
-                            switch (c)
+                            if (c == 'X')
                             {
-                                case '0':
-                                    break;
-                                case '1':
-                                {
-                                    var m = 1 << (mask.Length - index - 1);
-                                    a = a | m;
-                                    break;
-                                }
-                                case 'X':
-                                {
-                                    var m = 1 << (mask.Length - index - 1);
-                                    StringBuilder b = new StringBuilder(partialMask);
-                                    b[index] = '0';
-                                    WriteAll(a | m, b.ToString());
-                                    WriteAll(a & ~m, b.ToString());
-                                    return;
-                                }
+                                var m = 1 << (mask.Length - index - 1);
+                                StringBuilder b = new StringBuilder(partialMask) {[index] = '0'};
+                                WriteAll(a | m, b.ToString());
+                                WriteAll(a & ~m, b.ToString());
+                                return;
                             }
                         }
 
                         values[a] = v;
                     }
-
-                    WriteAll(addr, mask);
+                    WriteAll(addr | addMask, mask);
                 }
             }
 
