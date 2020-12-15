@@ -12,11 +12,8 @@ namespace AdventOfCode
             [CallerFilePath] string file = null,
             [CallerMemberName] string problem = null)
         {
-            #if SAMPLE
-            string suffix = "_sample";
-            #else
-            string suffix = "";
-            #endif
+            string suffix = Settings.RunSample ? "_sample" : "";
+
             var dayPart = Path.GetFileNameWithoutExtension(file);
             var problemPart = problem;
             var path =

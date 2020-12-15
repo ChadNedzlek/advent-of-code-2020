@@ -13,7 +13,7 @@ namespace AdventOfCode
             IEnumerable<Type> dayTypes =
                 Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name.StartsWith("Day"));
 
-            bool all = args.Length > 0;
+            bool all = args.Length > 0 || Settings.RunAll;
 
             IOrderedEnumerable<Type> orderedDays = dayTypes.OrderBy(d => int.Parse(d.Name.Substring(3)));
             if (all)
