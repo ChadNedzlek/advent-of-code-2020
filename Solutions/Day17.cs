@@ -9,14 +9,6 @@ namespace AdventOfCode.Solutions
 {
     public class Day17
     {
-        private static readonly MethodInfo? s_sum = typeof(Day17).GetMethod(nameof(Sum));
-        private static readonly MethodInfo? s_pad = typeof(Day17).GetMethod(nameof(Pad));
-        private static readonly MethodInfo? s_zeroList = typeof(Day17).GetMethod(nameof(ZeroList));
-        private static readonly MethodInfo? s_iterate = typeof(Day17).GetMethod(nameof(Iterate));
-        private static readonly MethodInfo? s_count = typeof(Day17).GetMethod(nameof(Count));
-        private static readonly MethodInfo? s_get = typeof(Day17).GetMethod(nameof(Get));
-        private static readonly MethodInfo? s_set = typeof(Day17).GetMethod(nameof(Set));
-
         public static async Task Problem1()
         {
             var data = await Data.GetDataLines();
@@ -63,9 +55,8 @@ namespace AdventOfCode.Solutions
         {
             if (typeof(T) == typeof(bool))
                 return current.Count(x => (bool)(object)x);
-
-            var method = s_sum.MakeGenericMethod(typeof(T).GetGenericArguments()[0]);
-            return current.Sum(c => (int) method.Invoke(null, new object[] {c}));
+            
+            return current.Sum(c => Sum((dynamic) c));
         }
 
         public static List<T> Pad<T>(List<T> input)
@@ -76,11 +67,7 @@ namespace AdventOfCode.Solutions
             {
                 foreach (T chunk in input)
                 {
-                    newStuff.Add(
-                        (T) s_pad
-                            .MakeGenericMethod(typeof(T).GenericTypeArguments)
-                            .Invoke(null, new object[] {chunk})
-                    );
+                    newStuff.Add(Pad((dynamic) chunk));
                 }
             }
             else
@@ -102,11 +89,8 @@ namespace AdventOfCode.Solutions
                 bool f = false;
                 return Unsafe.As<bool, T>(ref f);
             }
-            
-            var elementType = typeof(T).GetGenericArguments()[0];
-            return (T) s_zeroList
-                    .MakeGenericMethod(elementType)
-                    .Invoke(null, new object[] {chunk, pad});
+
+            return ZeroList((dynamic) chunk, pad);
         }
 
         public static List<T> ZeroList<T>(List<T> chunk, bool pad)
@@ -142,22 +126,14 @@ namespace AdventOfCode.Solutions
                 return;
             }
 
-            var elementType = typeof(TInput).GetGenericArguments()[0];
-            var iter = s_iterate.MakeGenericMethod(elementType);
-
             for (int i = 0; i < input.Count; i++)
             {
-                iter.Invoke(
-                    null,
-                    new object[]
-                    {
-                        input[i], (Action<List<int>>) (l =>
-                        {
-                            l.Insert(0, i);
-                            useCoords(l);
-                        })
-                    }
-                );
+                Action<List<int>> recur = l =>
+                {
+                    l.Insert(0, i);
+                    useCoords(l);
+                };
+                Iterate((dynamic) input[i], recur);
             }
         }
 
@@ -185,17 +161,13 @@ namespace AdventOfCode.Solutions
             else
             {
                 // This is another List of something
-                var countMethod = s_count.MakeGenericMethod(typeof(T).GetGenericArguments()[0]);
                 for (int d = -1; d <= 1; d++)
                 {
                     int tx = coords[index] + d;
                     if (tx < 0 || tx >= dimension.Count)
                         continue;
 
-                    count += (int) countMethod.Invoke(
-                        null,
-                        new Object[] {dimension[tx], coords, index + 1, zero && d == 0}
-                    );
+                    count += (int) Count((dynamic)dimension[tx], coords, index + 1, zero && d == 0);
                 }
             }
 
@@ -212,12 +184,7 @@ namespace AdventOfCode.Solutions
             }
             else
             {
-                return (bool) s_get
-                    .MakeGenericMethod(typeof(T).GetGenericArguments()[0])
-                    .Invoke(
-                        null,
-                        new Object[] {dimension[x], coords, index + 1}
-                    );
+                return Get((dynamic) dimension[x], coords, index + 1);
             }
         }
 
@@ -231,12 +198,7 @@ namespace AdventOfCode.Solutions
             }
             else
             {
-                s_set
-                    .MakeGenericMethod(typeof(T).GetGenericArguments()[0])
-                    .Invoke(
-                        null,
-                        new Object[] {dimension[x], coords, value, index + 1}
-                    );
+                Set((dynamic) dimension[x], coords, value, index + 1);
             }
         }
     }
