@@ -12,8 +12,8 @@ namespace AdventOfCode.Solutions
         public static async Task Problem1()
         {
             var data = await Data.GetDataLines();
-            var initialPlane = data.Select(d => d.Select(c => c == '#').ToList()).ToList();
-            List<List<List<bool>>> current = new List<List<List<bool>>> {initialPlane};
+            var initialPlane = data.Select(d => (IList<bool>)d.Select(c => c == '#').ToList()).ToList();
+            var current = Build(3, initialPlane);
             current = RunIterations(current);
             Console.WriteLine($"Live cubes = {Sum(current)}");
         }
@@ -21,13 +21,21 @@ namespace AdventOfCode.Solutions
         public static async Task Problem2()
         {
             var data = await Data.GetDataLines();
-            var initialPlane = data.Select(d => d.Select(c => c == '#').ToList()).ToList();
-            List<List<List<List<bool>>>> current = new List<List<List<List<bool>>>> {new List<List<List<bool>>> {initialPlane}};
+            var initialPlane = data.Select(d => (IList<bool>)d.Select(c => c == '#').ToList()).ToList();
+            var current = Build(4, initialPlane);
             current = RunIterations(current);
             Console.WriteLine($"Live cubes = {Sum(current)}");
         }
 
-        private static List<T> RunIterations<T>(List<T> current)
+        private static dynamic Build(int dimensions, IList<IList<bool>> seed)
+        {
+            if (dimensions == 2)
+                return seed;
+
+            return new [] {Build(dimensions - 1, seed)};
+        }
+
+        private static IList<T> RunIterations<T>(IList<T> current)
         {
             for (int iteration = 0; iteration < 6; iteration++)
             {
@@ -51,7 +59,7 @@ namespace AdventOfCode.Solutions
             return current;
         }
 
-        public static int Sum<T>(List<T> current)
+        public static int Sum<T>(IList<T> current)
         {
             if (typeof(T) == typeof(bool))
                 return current.Count(x => (bool)(object)x);
@@ -59,22 +67,22 @@ namespace AdventOfCode.Solutions
             return current.Sum(c => Sum((dynamic) c));
         }
 
-        public static List<T> Pad<T>(List<T> input)
+        public static IList<T> Pad<T>(IList<T> input)
         {
-            List<T> newStuff = new List<T>(input.Count + 2);
+            IList<T> newStuff = new List<T>(input.Count + 2);
             newStuff.Add(Zero(input[0], true));
-            if (typeof(T).IsConstructedGenericType)
+            if (typeof(T) == typeof(bool))
             {
                 foreach (T chunk in input)
                 {
-                    newStuff.Add(Pad((dynamic) chunk));
+                    newStuff.Add(chunk);
                 }
             }
             else
             {
                 foreach (T chunk in input)
                 {
-                    newStuff.Add(chunk);
+                    newStuff.Add(Pad((dynamic) chunk));
                 }
             }
 
@@ -93,7 +101,7 @@ namespace AdventOfCode.Solutions
             return ZeroList((dynamic) chunk, pad);
         }
 
-        public static List<T> ZeroList<T>(List<T> chunk, bool pad)
+        public static IList<T> ZeroList<T>(IList<T> chunk, bool pad)
         {
             var n = new List<T>(chunk.Count + (pad ? 2 : 0));
             if (pad)
@@ -114,7 +122,7 @@ namespace AdventOfCode.Solutions
             return n;
         }
 
-        public static void Iterate<TInput>(List<TInput> input, Action<List<int>> useCoords)
+        public static void Iterate<TInput>(IList<TInput> input, Action<IList<int>> useCoords)
         {
             if (typeof(TInput) == typeof(bool))
             {
@@ -128,7 +136,7 @@ namespace AdventOfCode.Solutions
 
             for (int i = 0; i < input.Count; i++)
             {
-                Action<List<int>> recur = l =>
+                Action<IList<int>> recur = l =>
                 {
                     l.Insert(0, i);
                     useCoords(l);
@@ -137,7 +145,7 @@ namespace AdventOfCode.Solutions
             }
         }
 
-        public static int Count<T>(List<T> dimension, List<int> coords, int index = 0, bool zero = true)
+        public static int Count<T>(IList<T> dimension, IList<int> coords, int index = 0, bool zero = true)
         {
             int x = coords[index];
             int count = 0;
@@ -174,7 +182,7 @@ namespace AdventOfCode.Solutions
             return count;
         }
 
-        public static bool Get<T>(List<T> dimension, List<int> coords, int index = 0)
+        public static bool Get<T>(IList<T> dimension, IList<int> coords, int index = 0)
         {
             int x = coords[index];
             int count = 0;
@@ -188,7 +196,7 @@ namespace AdventOfCode.Solutions
             }
         }
 
-        public static void Set<T>(List<T> dimension, List<int> coords, bool value, int index = 0)
+        public static void Set<T>(IList<T> dimension, IList<int> coords, bool value, int index = 0)
         {
             int x = coords[index];
             int count = 0;
