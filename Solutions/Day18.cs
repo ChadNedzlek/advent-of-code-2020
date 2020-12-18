@@ -14,12 +14,13 @@ namespace AdventOfCode.Solutions
                 var num = new NumberLiteral("num", NumberOptions.IntOnly, typeof(NumNode));
 
                 var expr = new NonTerminal("expr");
-                var topex = new NonTerminal("binex", typeof(BinaryNode));
+                var binex = new NonTerminal("binex", typeof(BinaryNode));
+                var binop = new NonTerminal("binop");
                 var paren = new NonTerminal("paren");
 
-                expr.Rule = num | paren | topex;
-                topex.Rule = (expr + "*" + expr) |
-                    (expr + "+" + expr);
+                expr.Rule = num | paren | binex;
+                binex.Rule = expr + binop + expr;
+                binop.Rule = ToTerm("+") | "*";
                 paren.Rule = "(" + expr + ")";
 
                 Root = expr;
@@ -27,7 +28,7 @@ namespace AdventOfCode.Solutions
                 MarkPunctuation("(", ")");
                 RegisterBracePair("(", ")");
 
-                MarkTransient(expr, paren);
+                MarkTransient(expr, paren, binop);
 
                 if (withPrecedence)
                 {
