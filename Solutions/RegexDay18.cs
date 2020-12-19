@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions
 {
-    public class Day18Regex
+    public class RegexDay18
     {
         public static async Task Problem1()
         {

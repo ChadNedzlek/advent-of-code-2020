@@ -79,6 +79,26 @@ namespace AdventOfCode
             v3 = (T3) Convert.ChangeType(m.Groups[3].Value, typeof(T3));
         }
 
+        public static bool IsM<T1, T2, T3>(string input, [RegexPattern]string pattern,
+            out T1 v1,
+            out T2 v2,
+            out T3 v3)
+        {
+            Match m = ValidateIs<T1>(input, pattern, 4);
+            if (m.Success)
+            {
+                v1 = (T1) Convert.ChangeType(m.Groups[1].Value, typeof(T1));
+                v2 = (T2) Convert.ChangeType(m.Groups[2].Value, typeof(T2));
+                v3 = (T3) Convert.ChangeType(m.Groups[3].Value, typeof(T3));
+                return true;
+            }
+
+            v1 = default;
+            v2 = default;
+            v3 = default;
+            return false;
+        }
+
         public static void M<T1, T2, T3, T4>(
             string input,
             [RegexPattern] string pattern,
