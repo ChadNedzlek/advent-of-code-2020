@@ -184,7 +184,6 @@ namespace AdventOfCode.Solutions
         public static bool Get<T>(IList<T> dimension, IList<int> coords, int index = 0)
         {
             int x = coords[index];
-            int count = 0;
             if (index == coords.Count - 1)
             {
                 return (bool)(object)dimension[x];
@@ -198,7 +197,6 @@ namespace AdventOfCode.Solutions
         public static void Set<T>(IList<T> dimension, IList<int> coords, bool value, int index = 0)
         {
             int x = coords[index];
-            int count = 0;
             if (index == coords.Count - 1)
             {
                 dimension[x] = (T)(object)value;

@@ -131,4 +131,3 @@ namespace AdventOfCode.Solutions
         }
     }
 }
-}

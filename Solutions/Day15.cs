@@ -10,14 +10,14 @@ namespace AdventOfCode.Solutions
     {
         public static async Task Problem1()
         {
-            await Go(2020, await Data.GetDataLines());
+            Go(2020, await Data.GetDataLines());
         }
         public static async Task Problem2()
         {
-            await Go(30000000, await Data.GetDataLines());
+            Go(30000000, await Data.GetDataLines());
         }
 
-        private static async Task Go(int target, string[] data)
+        private static void Go(int target, string[] data)
         {
             Dictionary<long, long> prev = new Dictionary<long, long>();
             Dictionary<long, long> twoPrev = new Dictionary<long, long>();
