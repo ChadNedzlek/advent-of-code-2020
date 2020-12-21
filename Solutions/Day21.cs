@@ -26,7 +26,7 @@ namespace AdventOfCode.Solutions
                 {
                     if (allergenIngredients.TryGetValue(a, out var iList))
                     {
-                        iList.RemoveWhere(i => !food.Ingredients.Contains(i));
+                        iList.IntersectWith(food.Ingredients);
                     }
                     else
                     {
@@ -45,6 +45,7 @@ namespace AdventOfCode.Solutions
                         {
                             if (i != iRem && iRem.Remove(i.First()))
                             {
+                                iRem.ExceptWith(i);
                                 break;
                             }
                         }
