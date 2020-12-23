@@ -10,65 +10,9 @@ namespace AdventOfCode.Solutions
         public static async Task Problem1()
         {
             var data = await Data.GetDataLines();
-            List<int> cups = data[0].Select(c => c - '0').ToList();
-            int currentCup = 0;
-            int bigCup = cups.Max();
-            for (int i = 0; i < 100; i++)
-            {
-                int v = cups[currentCup];
-                Console.WriteLine($"-- move {i+1} --");
-                Console.WriteLine($"cups : {string.Join(", ", cups.Select(c => c == v ? $"({c})" : c.ToString()))}");
-                List<int> chunk = new List<int>(v);
-                for (int r = 0; r < 3; r++)
-                {
-                    if (currentCup + 1 >= cups.Count)
-                    {
-                        currentCup--;
-                        chunk.Add(cups[0]);
-                        cups.RemoveAt(0);
-                    }
-                    else
-                    {
-                        chunk.Add(cups[currentCup + 1]);
-                        cups.RemoveAt(currentCup + 1);
-                    }
-                }
-
-                Console.WriteLine($"pick up: {string.Join(", ", chunk)}");
-
-                var target = cups.IndexOf((v - 1 + bigCup) % bigCup);
-                while (target == -1)
-                {
-                    v--;
-                    if (v == 0)
-                    {
-                        target = cups.IndexOf(cups.Max());
-                    }
-                    else
-                    {
-                        target = cups.IndexOf((v - 1 + bigCup) % bigCup);
-                    }
-                }
-
-                Console.WriteLine($"destination: {cups[target]}");
-                cups.InsertRange(target + 1, chunk);
-                if (target < currentCup)
-                {
-                    currentCup += 3;
-                }
-
-                currentCup = (currentCup + 1) % cups.Count;
-                Console.WriteLine();
-            }
-
-            while (cups[0] != 1)
-            {
-                cups.Add(cups[0]);
-                cups.RemoveAt(0);
-            }
-            cups.RemoveAt(0);
-
-            Console.WriteLine($"Cups: {string.Join("", cups)}");
+            int cupCount = 9;
+            int moveCount = 100;
+            RunCupGame(data, cupCount, moveCount);
         }
 
         
@@ -77,6 +21,11 @@ namespace AdventOfCode.Solutions
             var data = await Data.GetDataLines();
             int cupCount = 1_000_000;
             int moveCount = 10_000_000;
+            RunCupGame(data, cupCount, moveCount);
+        }
+
+        private static void RunCupGame(string[] data, int cupCount, int moveCount)
+        {
             Node[] reference = new Node[cupCount + 1];
             Node currentNode = null;
             Node building = null;
@@ -97,8 +46,8 @@ namespace AdventOfCode.Solutions
                     building.Next = currentNode;
                 }
             }
-            
-            for (int i = iv.Length; i <= cupCount; i++)
+
+            for (int i = iv.Length + 1; i <= cupCount; i++)
             {
                 building.Next = new Node(i);
                 reference[building.Next.Value] = building.Next;
@@ -129,11 +78,11 @@ namespace AdventOfCode.Solutions
                     DumpList(n.Next, abortAt ?? n);
             }
 
-            bool dump = moveCount * (long)cupCount < 10_000;
+            bool dump = moveCount * (long) cupCount < 10_000;
 
             for (int i = 0; i < moveCount; i++)
             {
-                if (dump) Console.Write($"-- move {i+1} -- ");
+                if (dump) Console.Write($"-- move {i + 1} -- ");
                 if (i % 10_000 == 0)
                 {
                     Console.Write($"{(i * 100.0 / moveCount):N2}%");
@@ -199,8 +148,11 @@ namespace AdventOfCode.Solutions
                 Console.Write(print.Value);
                 print = print.Next;
             }
+
             Console.WriteLine();
-            Console.WriteLine($"Product {reference[1].Next.Value} x {reference[1].Next.Next.Value} = {reference[1].Next.Value * (long)reference[1].Next.Next.Value}");
+            Console.WriteLine(
+                $"Product {reference[1].Next.Value} x {reference[1].Next.Next.Value} = {reference[1].Next.Value * (long) reference[1].Next.Next.Value}"
+            );
         }
 
         public class Node
