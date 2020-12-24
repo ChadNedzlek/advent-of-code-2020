@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace AdventOfCode.Solutions
 {
@@ -31,7 +28,7 @@ namespace AdventOfCode.Solutions
         {
             var data = await Data.GetDataLines();
 
-            int s = 200;
+            int s = 15;
             
             bool[,] plane = new bool[s, s];
 
@@ -54,8 +51,12 @@ namespace AdventOfCode.Solutions
                     Get(p, Move("nw", x, y));
             }
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 5; i++)
             {
+                DumpGraph(plane);
+                Console.WriteLine("");
+                Console.WriteLine("********************************************************");
+                Console.WriteLine("");
                 var next = new bool[s, s];
                 for (int y = 0; y < s; y++)
                 {
@@ -158,7 +159,7 @@ namespace AdventOfCode.Solutions
 
             return (x, y);
         }
-
+        
         private static void DumpGraph(int y, int x, bool[,] plane, int[,] move)
         {
             for (int py = 0; py < 20; py++)
@@ -212,43 +213,20 @@ namespace AdventOfCode.Solutions
             }
         }
 
-        public class Tile
+        private static void DumpGraph(bool[,] plane)
         {
-            public static readonly List<Tile> AllTiles = new List<Tile>();
-
-            public bool Flipped { get; set; }
-
-            private readonly Tile[] _tiles = new Tile[6];
-
-            public Tile()
+            for (int py = 0; py <= plane.GetUpperBound(0); py++)
             {
-                AllTiles.Add(this);
-            }
-
-            public Tile Get(Dir d, bool add = true)
-            {
-                var t = _tiles[(int) d];
-                if (t == null)
+                Console.Write(py.ToString("D2"));
+                if (py % 2 == 1)
+                    Console.Write(" ");
+                for (int px = 0; px <= plane.GetUpperBound(1); px++)
                 {
-                    if (!add)
-                        return null;
-
-                    _tiles[(int) d] = t = new Tile();
-                    t._tiles[((int)d + 3) % 6] = this;
+                    Console.Write($"{(plane[py, px] ? "#" : ".")} ");
                 }
 
-                return t;
+                Console.WriteLine();
             }
-        }
-
-        public enum Dir
-        {
-            E,
-            SE,
-            SW,
-            W,
-            NW,
-            NE
         }
     }
 }

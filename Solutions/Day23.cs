@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace AdventOfCode.Solutions
@@ -10,7 +11,7 @@ namespace AdventOfCode.Solutions
             var data = await Data.GetDataLines();
             int cupCount = 9;
             int moveCount = 100;
-            RunCupGame(data, cupCount, moveCount);
+            RunSimpleCupGame(data, cupCount, moveCount);
         }
 
         
@@ -19,26 +20,33 @@ namespace AdventOfCode.Solutions
             var data = await Data.GetDataLines();
             int cupCount = 1_000_000;
             int moveCount = 10_000_000;
-            RunCupGame(data, cupCount, moveCount);
-        }
+            Stopwatch collapsed = Stopwatch.StartNew();
+            //RunCollapsedCupGame(data, cupCount, moveCount);
+            collapsed.Stop();
+            Stopwatch simple = Stopwatch.StartNew();
+            RunSimpleCupGame(data, cupCount, moveCount);
+            simple.Stop();
 
-        private static void RunCupGame(string[] data, int cupCount, int moveCount)
+            Console.WriteLine($"Comparison: simple = {simple.Elapsed:g}, collapsed = {collapsed.Elapsed:g}");
+        }
+        
+        private static void RunSimpleCupGame(string[] data, int cupCount, int moveCount)
         {
-            Node[] reference = new Node[cupCount + 1];
-            Node currentNode = null;
-            Node building = null;
+            SimpleNode[] reference = new SimpleNode[cupCount + 1];
+            SimpleNode currentNode = null;
+            SimpleNode building = null;
             string iv = data[0];
             foreach (char c in iv)
             {
                 if (currentNode == null)
                 {
-                    building = currentNode = new Node(c - '0');
+                    building = currentNode = new SimpleNode(c - '0');
                     reference[building.Value] = building;
                     building.Next = currentNode;
                 }
                 else
                 {
-                    building.Next = new Node(c - '0');
+                    building.Next = new SimpleNode(c - '0');
                     reference[building.Next.Value] = building.Next;
                     building = building.Next;
                     building.Next = currentNode;
@@ -47,14 +55,14 @@ namespace AdventOfCode.Solutions
 
             for (int i = iv.Length + 1; i <= cupCount; i++)
             {
-                building.Next = new Node(i);
+                building.Next = new SimpleNode(i);
                 reference[building.Next.Value] = building.Next;
                 building = building.Next;
                 building.Next = currentNode;
             }
 
 
-            bool Has(Node n, int target)
+            bool Has(SimpleNode n, int target)
             {
                 if (target == n.Value)
                     return true;
@@ -65,49 +73,14 @@ namespace AdventOfCode.Solutions
                 return false;
             }
 
-            void DumpList(Node n, Node abortAt = null)
-            {
-                Console.Write($"{n.Value}");
-
-                if (n.Next != abortAt && n.Next != null)
-                    Console.Write(", ");
-
-                if (n.Next != null && n.Next != abortAt)
-                    DumpList(n.Next, abortAt ?? n);
-            }
-
-            bool dump = moveCount * (long) cupCount < 10_000;
-
             for (int i = 0; i < moveCount; i++)
             {
-                if (dump) Console.Write($"-- move {i + 1} -- ");
-                if (i % 10_000 == 0)
-                {
-                    Console.Write($"{(i * 100.0 / moveCount):N2}%");
-                    Console.CursorLeft = 0;
-                }
-
-                if (dump)
-                {
-                    Console.WriteLine();
-                    Console.Write("cups: ");
-                    DumpList(currentNode);
-                    Console.WriteLine();
-                }
-
                 int value = currentNode.Value;
-                Node chunk = currentNode.Next;
-                Node skip = chunk.Next.Next.Next;
+                SimpleNode chunk = currentNode.Next;
+                SimpleNode skip = chunk.Skip(3);
 
                 currentNode.Next = skip;
-                chunk.Next.Next.Next = null;
-
-                if (dump)
-                {
-                    Console.Write("pick up: ");
-                    DumpList(chunk);
-                    Console.WriteLine();
-                }
+                chunk.Skip(2).Next = null;
 
                 int t = value;
                 do
@@ -117,26 +90,10 @@ namespace AdventOfCode.Solutions
                         t = cupCount;
                 } while (Has(chunk, t));
 
-                if (dump)
-                {
-                    Console.WriteLine($"destination: {t}");
-                }
-
                 chunk.Next.Next.Next = reference[t].Next;
                 reference[t].Next = chunk;
 
-                if (dump)
-                {
-                    Console.Write("after insert: ");
-                    DumpList(currentNode);
-                    Console.WriteLine();
-                }
-
                 currentNode = currentNode.Next;
-                if (dump)
-                {
-                    Console.WriteLine();
-                }
             }
 
             Console.Write("8 after 1: ");
@@ -153,15 +110,196 @@ namespace AdventOfCode.Solutions
             );
         }
 
-        public class Node
+        private static void RunCollapsedCupGame(string[] data, int cupCount, int moveCount)
         {
-            public Node(int value)
+            CollapsedNode head = null;
+            CollapsedNode tail = null;
+            string iv = data[0];
+            foreach (char c in iv)
+            {
+                var building = new CollapsedNode(c - '0');
+                if (head == null)
+                {
+                    tail = head = building;
+                }
+                tail.Connect(building);
+                building.Connect(head);
+                tail = building;
+            }
+
+            var remNode = new CollapsedNode(iv.Length + 1, cupCount);
+            tail.Connect(remNode);
+            remNode.Connect(head);
+
+            bool Has(CollapsedNode n, int target)
+            {
+                if (target >= n.Low && target <= n.High)
+                    return true;
+
+                if (n.HasNext)
+                    return Has(n.Next, target);
+
+                return false;
+            }
+
+            CollapsedNode Find(CollapsedNode h, int label)
+            {
+                while (true)
+                {
+                    if (label >= h.Low && label <= h.High) return h;
+
+                    h = h.Next;
+                }
+            }
+
+            for (int i = 0; i < moveCount; i++)
+            {
+                int value = head.Low;
+                var chunk = head.Skip(1);
+                var skip = chunk.Skip(3);
+                CollapsedNode chunkTail = chunk.Skip(2, end: true);
+                head.Connect(null);
+                chunkTail.Connect(null);
+                head.Connect(skip);
+                
+                int t = value;
+                do
+                {
+                    t--;
+                    if (t == 0)
+                        t = cupCount;
+                } while (Has(chunk, t));
+
+                CollapsedNode targetNode = Find(head, t);
+                CollapsedNode afterTarget = targetNode.Skip(t - targetNode.Low + 1);
+                chunkTail.Connect(afterTarget);
+                targetNode.Connect(chunk);
+
+                head = head.Skip(1);
+            }
+
+            Console.Write("8 after 1: ");
+            var one = Find(head, 1);
+            var print = one.Skip(1);
+            for (int i = 0; i < 8; i++)
+            {
+                Console.Write(print.Low);
+                print = print.Skip(1);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"Product {one.Skip(1).Low} x {one.Skip(2).Low} = {one.Skip(1).Low * (long) one.Skip(2).Low}"
+            );
+        }
+
+        public class SimpleNode
+        {
+            public SimpleNode(int value)
             {
                 Value = value;
             }
 
             public int Value { get; }
-            public Node Next { get; set; }
+            public SimpleNode Next { get; set; }
+
+            public SimpleNode Skip(int skip) => skip == 0 ? this : Next.Skip(skip - 1);
+        }
+
+        public class CollapsedNode
+        {
+            public CollapsedNode(int value)
+            {
+                Low = High = value;
+            }
+
+            public CollapsedNode(int low, int high)
+            {
+                Low = low;
+                High = high;
+            }
+
+            public int Low { get; private set; }
+            public int High { get; private set; }
+
+            public CollapsedNode Next { get; private set; }
+            public bool HasNext => Next != null;
+
+            public bool IsSingle => Low == High;
+
+            public CollapsedNode Skip(int skip, bool end = false)
+            {
+                if (skip == 0)
+                {
+                    return this;
+                }
+
+                if (skip >= Width)
+                {
+                    // we need to skip this whole node
+                    return Next.Skip(skip - Width);
+                }
+
+                if (end)
+                {
+                    Split(Low + skip + 1, High);
+                    return this;
+                }
+
+                Split(Low + skip, High);
+
+                return Next;
+            }
+
+            private int Width => High - Low + 1;
+
+            private void Split(int low, int high)
+            {
+                if (low == Low)
+                {
+                    if (high == High)
+                        return;
+
+                    var n = new CollapsedNode(High + 1, high);
+                    High = high;
+                    n.Connect(Next);
+                    Connect(n);
+                    return;
+                }
+
+                if (high == High)
+                {
+                    var n = new CollapsedNode(low, High);
+                    High = low - 1;
+                    n.Connect(Next);
+                    Connect(n);
+                    return;
+                }
+
+                var midNode = new CollapsedNode(low, high);
+                var highNode  = new CollapsedNode(high +1, High);
+                High = low - 1;
+                highNode.Connect(Next);
+                midNode.Connect(highNode);
+                Connect(midNode);
+            }
+
+            public void Connect(CollapsedNode n)
+            {
+                if (n != null && n.Low == n.High + 1)
+                {
+                    // We can combine this node
+                    High = n.High;
+                    return;
+                }
+
+                Next = n;
+            }
+
+            public override string ToString()
+            {
+                return String.Concat(IsSingle ? Low.ToString() : $"{Low}-{High}", " ", HasNext ? "=>" : "=X");
+            }
         }
     }
 }
