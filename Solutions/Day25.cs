@@ -11,10 +11,6 @@ namespace AdventOfCode.Solutions
             int cardPublic = int.Parse(data[0]);
             int doorPublic = int.Parse(data[1]);
 
-            int subject = 1;
-            int loopSize = 1;
-            int doorLoop = 1, cardLoop = 1;
-
             long Transform(int s, int l)
             {
                 long value = 1;
@@ -41,9 +37,9 @@ namespace AdventOfCode.Solutions
                 }
             }
             
-            cardLoop = FindLoop(cardPublic);
+            int cardLoop = FindLoop(cardPublic);
             Console.WriteLine($"Card loop: {cardLoop}");
-            doorLoop = FindLoop(doorPublic);
+            int doorLoop = FindLoop(doorPublic);
             Console.WriteLine($"Door loop: {doorLoop}");
 
             var enc = Transform(cardPublic, doorLoop);
